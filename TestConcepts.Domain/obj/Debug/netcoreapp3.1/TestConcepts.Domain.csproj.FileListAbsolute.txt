@@ -1,0 +1,9 @@
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\bin\Debug\netcoreapp3.1\TestConcepts.Domain.deps.json
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\bin\Debug\netcoreapp3.1\TestConcepts.Domain.dll
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\bin\Debug\netcoreapp3.1\TestConcepts.Domain.pdb
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\obj\Debug\netcoreapp3.1\TestConcepts.Domain.AssemblyInfoInputs.cache
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\obj\Debug\netcoreapp3.1\TestConcepts.Domain.AssemblyInfo.cs
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\obj\Debug\netcoreapp3.1\TestConcepts.Domain.dll
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\obj\Debug\netcoreapp3.1\TestConcepts.Domain.pdb
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\obj\Debug\netcoreapp3.1\TestConcepts.Domain.csprojAssemblyReference.cache
+C:\Users\U002577\Documents\GitHub\TestConcepts\TestConcepts.Domain\obj\Debug\netcoreapp3.1\TestConcepts.Domain.csproj.CoreCompileInputs.cache

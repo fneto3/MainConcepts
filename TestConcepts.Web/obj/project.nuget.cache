@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "CvNT1qcmIO7s7uj4rIwk6P7IEtl9Pm3wkC2PX/k4saUQIQ/iF3seb780+oNHxtxZuiZGqrLOLm28FAVR4684Xw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Web\\TestConcepts.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\5.0.0-preview.7.20364.11\\microsoft.extensions.dependencyinjection.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\5.0.0-preview.7.20364.11\\microsoft.extensions.dependencyinjection.abstractions.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.http\\5.0.0-preview.7.20364.11\\microsoft.extensions.http.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.http.polly\\5.0.0-preview.7.20365.4\\microsoft.extensions.http.polly.5.0.0-preview.7.20365.4.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.logging\\5.0.0-preview.7.20364.11\\microsoft.extensions.logging.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\5.0.0-preview.7.20364.11\\microsoft.extensions.logging.abstractions.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.options\\5.0.0-preview.7.20364.11\\microsoft.extensions.options.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.primitives\\5.0.0-preview.7.20364.11\\microsoft.extensions.primitives.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\polly\\7.1.0\\polly.7.1.0.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\polly.extensions.http\\3.0.0\\polly.extensions.http.3.0.0.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\system.diagnostics.diagnosticsource\\5.0.0-preview.7.20364.11\\system.diagnostics.diagnosticsource.5.0.0-preview.7.20364.11.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0-preview.7.20364.11\\system.runtime.compilerservices.unsafe.5.0.0-preview.7.20364.11.nupkg.sha512"
+  ],
+  "logs": []
+}

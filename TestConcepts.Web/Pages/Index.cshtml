@@ -1,0 +1,45 @@
+﻿@page
+@model IndexModel
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- Default form contact -->
+        <form class="text-center border border-light p-5" action="#!">
+
+            <p class="h4 mb-4">Add New User</p>
+
+            <!-- Name -->
+            <input type="text" id="inpUser" class="form-control mb-4" placeholder="Username">
+            @Html.ValidationMessage("Username")
+
+            <!-- Email -->
+            <input type="email" id="inpEmail" class="form-control mb-4" placeholder="E-mail">
+            @Html.ValidationMessage("E-mail")
+
+            <!-- Password -->
+            <input type="password" id="inpPassword" class="form-control mb-4" placeholder="Password">
+            @Html.ValidationMessage("Password")
+
+            <!-- Send button -->
+            <button class="btn btn-info btn-block" type="submit">Add</button>
+
+        </form>
+        <!-- Default form contact -->
+    </div>
+    <div class="col-md-6">
+        <!-- Your second column here -->
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    One of three columns
+                </div>
+                <div class="col-sm">
+                    One of three columns
+                </div>
+                <div class="col-sm">
+                    One of three columns
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

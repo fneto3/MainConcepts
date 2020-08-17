@@ -1,0 +1,130 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Repository\\TestConcepts.Repository.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Domain\\TestConcepts.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Domain\\TestConcepts.Domain.csproj",
+        "projectName": "TestConcepts.Domain",
+        "projectPath": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Domain\\TestConcepts.Domain.csproj",
+        "packagesPath": "C:\\Users\\U002577\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\U002577\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Nuget": {},
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\Microsoft SDKs\\Service Fabric\\packages": {},
+          "C:\\Users\\U002577\\AppData\\Roaming\\SAK\\Nuget": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://xpinvestimentos.pkgs.visualstudio.com/_packaging/PackagesXP/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[3.1.7, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Repository\\TestConcepts.Repository.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Repository\\TestConcepts.Repository.csproj",
+        "projectName": "TestConcepts.Repository",
+        "projectPath": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Repository\\TestConcepts.Repository.csproj",
+        "packagesPath": "C:\\Users\\U002577\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Repository\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\U002577\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Nuget": {},
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\Microsoft SDKs\\Service Fabric\\packages": {},
+          "C:\\Users\\U002577\\AppData\\Roaming\\SAK\\Nuget": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://xpinvestimentos.pkgs.visualstudio.com/_packaging/PackagesXP/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {
+              "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Domain\\TestConcepts.Domain.csproj": {
+                "projectPath": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\TestConcepts.Domain\\TestConcepts.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
