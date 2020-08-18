@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "fDHxiU/4hTRQW5QHkjZ5azcET3mfoXbXUePskC7vVKi1MbH8A3ysh7thtCbb/pO+wTR79kZmgsgw1dw3zT+2Hg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\U002577\\Documents\\GitHub\\TestConcepts\\ApplicationCore\\ApplicationCore.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\U002577\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\3.1.7\\microsoft.extensions.logging.abstractions.3.1.7.nupkg.sha512",
+    "C:\\Users\\U002577\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
