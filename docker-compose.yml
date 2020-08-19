@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2017-latest 
+
+  calculatorapi:
+    image: ${DOCKER_REGISTRY-}calculatorapi
+    build:
+      context: .
+      dockerfile: Calculator.API/Dockerfile
+    depends_on:
+      - sqldata
+
+  publicapi:
+    image: ${DOCKER_REGISTRY-}publicapi
+    build:
+      context: .
+      dockerfile: PublicApi/Dockerfile
+    depends_on:
+      - calculatorapi

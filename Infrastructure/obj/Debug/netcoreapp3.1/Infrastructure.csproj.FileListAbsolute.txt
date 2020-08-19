@@ -3,10 +3,10 @@ C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\bin\Debug\netcorea
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.csprojAssemblyReference.cache
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.AssemblyInfoInputs.cache
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.AssemblyInfo.cs
-C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.csproj.CoreCompileInputs.cache
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\bin\Debug\netcoreapp3.1\Infrastructure.pdb
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\bin\Debug\netcoreapp3.1\ApplicationCore.dll
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\bin\Debug\netcoreapp3.1\ApplicationCore.pdb
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.csproj.CopyComplete
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.dll
 C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.pdb
+C:\Users\U002577\Documents\GitHub\TestConcepts\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.csproj.CoreCompileInputs.cache

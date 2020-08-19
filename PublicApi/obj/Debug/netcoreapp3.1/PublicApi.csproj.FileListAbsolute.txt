@@ -68,3 +68,8 @@ C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\bin\Debug\netcoreapp3.1
 C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\obj\Debug\netcoreapp3.1\PublicApi.csproj.CoreCompileInputs.cache
 C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\obj\Debug\netcoreapp3.1\PublicApi.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\obj\Debug\netcoreapp3.1\PublicApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\bin\Debug\netcoreapp3.1\Ardalis.GuardClauses.dll
+C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\bin\Debug\netcoreapp3.1\Ardalis.Specification.dll
+C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\bin\Debug\netcoreapp3.1\Ardalis.Specification.EntityFrameworkCore.dll
+C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\bin\Debug\netcoreapp3.1\JetBrains.Annotations.dll
+C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.InMemory.dll

@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+
+  sqldata:
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"
+    volumes:
+      - //c/Users/U002577/Docker/SQL:/var/opt/mssql/data
+
+  calculatorapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionString=${Server=sqldata;Database=Calculator;User Id=sa;Password=Pass@word}
+
+  publicapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
