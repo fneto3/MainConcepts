@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationCore.Business
 {
-    public class Calculator : BaseEntity, ICalculator
+    public class Calculator : ICalculator
     {
         private readonly ILogger<Calculator> _logger;
 
@@ -29,7 +29,7 @@ namespace ApplicationCore.Business
 
         public decimal Result { get; private set; }
 
-        public async Task Calculate()
+        public void Calculate()
         {
             switch (CalculatorType)
             {
@@ -54,9 +54,9 @@ namespace ApplicationCore.Business
 
     public enum CalculatorTypes
     {
-        Addition,
-        Subtraction,
-        Division,
-        Multiplication
+        Addition = 1,
+        Subtraction = 2,
+        Division = 3,
+        Multiplication = 4
     }
 }

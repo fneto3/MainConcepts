@@ -6,14 +6,17 @@ namespace ApplicationCore.Entities
 {
     public class Calculator : BaseEntity, IAggregateRoot
     {
-        public Calculator(decimal a, decimal b)
+        public Calculator()
         {
-            A = a;
-            B = b;
+
         }
 
-        public decimal A { get; private set; }
+        public decimal A { get; set; }
 
-        public decimal B { get; private set; }
+        public decimal B { get; set; }
+
+        public decimal Result { get; set; }
+
+        public CalculatorType CalculatorType { get; set; }
     }
 }

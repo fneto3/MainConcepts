@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using ApplicationCore.Entities.Interfaces;
 using Infrastructure.Data;
@@ -67,6 +68,8 @@ namespace Calculator.API
             services.AddMemoryCache();
 
             services.AddControllers();
+
+            services.AddCustomDbContext(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,6 +83,25 @@ namespace Calculator.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+        }
+    }
+
+    public static class CustomExtensionMethods
+    {
+        public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddEntityFrameworkSqlServer()
+                    .AddDbContext<TestConceptsContext>(options =>
+                    {
+                        options.UseSqlServer(configuration["ConnectionString"],
+                                             sqlServerOptionsAction: sqlOptions =>
+                                             {
+                                                 sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                                                 sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                                             });
+                    });
+
+            return services;
         }
     }
 }

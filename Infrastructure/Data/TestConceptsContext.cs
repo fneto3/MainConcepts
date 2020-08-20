@@ -9,6 +9,7 @@ namespace Infrastructure.Data
         public TestConceptsContext(DbContextOptions<TestConceptsContext> options) 
             : base(options)
         {
+            this.Database.EnsureCreated();
         }
 
         public DbSet<Calculator> Calculator { get; set; }

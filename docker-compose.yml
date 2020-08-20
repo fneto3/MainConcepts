@@ -1,9 +1,15 @@
-version: '3.4'
+version: '3.5'
 
 services:
+  seq:
+    image: datalust/seq:latest
 
   sqldata:
     image: mcr.microsoft.com/mssql/server:2017-latest 
+    networks:
+      - testConcepts
+    ports:
+      - "5433:1433"
 
   calculatorapi:
     image: ${DOCKER_REGISTRY-}calculatorapi
@@ -12,6 +18,8 @@ services:
       dockerfile: Calculator.API/Dockerfile
     depends_on:
       - sqldata
+    networks:
+      - testConcepts
 
   publicapi:
     image: ${DOCKER_REGISTRY-}publicapi
@@ -20,3 +28,9 @@ services:
       dockerfile: PublicApi/Dockerfile
     depends_on:
       - calculatorapi
+    networks:
+      - testConcepts
+
+networks:
+  testConcepts:
+    name: testConcepts
