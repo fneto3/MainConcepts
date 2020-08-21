@@ -4,9 +4,9 @@ using System.Reflection;
 
 namespace Infrastructure.Data
 {
-    public class TestConceptsContext : DbContext
+    public class MainConceptsContext : DbContext
     {
-        public TestConceptsContext(DbContextOptions<TestConceptsContext> options) 
+        public MainConceptsContext(DbContextOptions<MainConceptsContext> options) 
             : base(options)
         {
             this.Database.EnsureCreated();

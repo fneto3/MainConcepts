@@ -30,8 +30,8 @@ namespace Calculator.API
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
                 try
                 {
-                    var calculatorContext = services.GetRequiredService<TestConceptsContext>();
-                    await TestConceptsContextSeed.SeedAsync(calculatorContext, loggerFactory);
+                    var calculatorContext = services.GetRequiredService<MainConceptsContext>();
+                    await MainConceptsContextSeed.SeedAsync(calculatorContext, loggerFactory);
                 }
                 catch (Exception ex)
                 {
@@ -77,10 +77,7 @@ namespace Calculator.API
             var seqServerUrl = configuration["Serilog:SeqServerUrl"];
             var logstashUrl = configuration["Serilog:LogstashgUrl"];
             return new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .Enrich.WithProperty("ApplicationContext", "TestConcepts")
                 .Enrich.FromLogContext()
-                .WriteTo.Console()
                 .WriteTo.Seq(string.IsNullOrWhiteSpace(seqServerUrl) ? "http://seq" : seqServerUrl)
                 .WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl)
                 .ReadFrom.Configuration(configuration)

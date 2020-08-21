@@ -6,10 +6,11 @@
     <UserSecretsId>f0a87fc3-f8e4-43cc-a241-98e7dca7b368</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\U002577\Documents\GitHub\TestConcepts\PublicApi\PublicApi.xml</DocumentationFile>
+    <DocumentationFile>C:\Users\U002577\Documents\GitHub\MainConcepts\src\Services\PublicApi\PublicApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Core\ApplicationCore\ApplicationCore.csproj" />
+    <ProjectReference Include="..\..\Core\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
 

@@ -13,9 +13,9 @@ namespace Infrastructure.Data
 {
     public class EfRepository<T> : IAsyncRepository<T> where T : BaseEntity, IAggregateRoot
     {
-        protected readonly TestConceptsContext _dbContext;
+        protected readonly MainConceptsContext _dbContext;
 
-        public EfRepository(TestConceptsContext dbContext)
+        public EfRepository(MainConceptsContext dbContext)
         {
             _dbContext = dbContext;
         }

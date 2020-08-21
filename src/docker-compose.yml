@@ -7,7 +7,7 @@ services:
   sqldata:
     image: mcr.microsoft.com/mssql/server:2017-latest 
     networks:
-      - testConcepts
+      - mainConcepts
     ports:
       - "5433:1433"
 
@@ -15,22 +15,22 @@ services:
     image: ${DOCKER_REGISTRY-}calculatorapi
     build:
       context: .
-      dockerfile: Calculator.API/Dockerfile
+      dockerfile: Services/Calculator.API/Dockerfile
     depends_on:
       - sqldata
     networks:
-      - testConcepts
+      - mainConcepts
 
   publicapi:
     image: ${DOCKER_REGISTRY-}publicapi
     build:
       context: .
-      dockerfile: PublicApi/Dockerfile
+      dockerfile: Services/PublicApi/Dockerfile
     depends_on:
       - calculatorapi
     networks:
-      - testConcepts
+      - mainConcepts
 
 networks:
-  testConcepts:
-    name: testConcepts
+  mainConcepts:
+    name: mainConcepts

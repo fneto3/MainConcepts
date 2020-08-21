@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Data
 {
-    public class TestConceptsContextSeed
+    public class MainConceptsContextSeed
     {
-        public static async Task SeedAsync(TestConceptsContext calculatorContext, ILoggerFactory loggerFactory, int? retry = 0)
+        public static async Task SeedAsync(MainConceptsContext calculatorContext, ILoggerFactory loggerFactory, int? retry = 0)
         {
             int retryForAvailability = retry.Value;
 
@@ -31,7 +31,7 @@ namespace Infrastructure.Data
                 if (retryForAvailability < 10)
                 {
                     retryForAvailability++;
-                    var log = loggerFactory.CreateLogger<TestConceptsContextSeed>();
+                    var log = loggerFactory.CreateLogger<MainConceptsContextSeed>();
                     log.LogError(ex.Message);
                     await SeedAsync(calculatorContext, loggerFactory, retryForAvailability);
                 }

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Calculator.API
 {
@@ -59,7 +60,7 @@ namespace Calculator.API
 
         private void ConfigureInMemoryDatabases(IServiceCollection services)
         {
-            //services.AddDbContext<TestConceptsContext>(c =>
+            //services.AddDbContext<MainConceptsContext>(c =>
             //    c.UseInMemoryDatabase("Catalog"));
 
             ConfigureServices(services);
@@ -67,7 +68,7 @@ namespace Calculator.API
 
         public void ConfigureProductionServices(IServiceCollection services)
         {
-            services.AddDbContext<TestConceptsContext>(c =>
+            services.AddDbContext<MainConceptsContext>(c =>
                 c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection")));
 
             ConfigureServices(services);
@@ -79,7 +80,7 @@ namespace Calculator.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory log)
         {
             if (env.IsDevelopment())
             {
@@ -105,6 +106,14 @@ namespace Calculator.API
             {
                 endpoints.MapControllers();
             });
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .Enrich.FromLogContext()
+                .WriteTo.Seq("http://locahost:5341")
+                .CreateLogger();
+
+            log.AddSerilog();
         }
     }
 
@@ -113,7 +122,7 @@ namespace Calculator.API
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<TestConceptsContext>(options =>
+                    .AddDbContext<MainConceptsContext>(options =>
                     {
                         options.UseSqlServer(configuration["ConnectionString"],
                                              sqlServerOptionsAction: sqlOptions =>
