@@ -16,32 +16,17 @@ namespace Calculator.API
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            var configuration = GetConfiguration();
-
-            Log.Logger = CreateSerilogLogger(configuration);
-
-            var host = CreateHostBuilder(configuration, args);
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-                try
-                {
-                    var calculatorContext = services.GetRequiredService<TestConceptsContext>();
-                    await TestConceptsContextSeed.SeedAsync(calculatorContext, loggerFactory);
-                }
-                catch (Exception ex)
-                {
-                    var logger = loggerFactory.CreateLogger<Program>();
-                    logger.LogError(ex, "An error occurred seeding the DB.");
-                }
-            }
-
-            host.Run();
+            CreateHostBuilder(args).Build().Run();
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
 
         public static IWebHost CreateHostBuilder(IConfiguration configuration, string[] args) =>
             WebHost.CreateDefaultBuilder(args)
@@ -61,8 +46,6 @@ namespace Calculator.API
 
                 })
                 .UseStartup<Startup>()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseWebRoot("Pics")
                 .UseSerilog()
                 .Build();
 

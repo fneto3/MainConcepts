@@ -20,7 +20,7 @@
     "PublicApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "publicApi",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
