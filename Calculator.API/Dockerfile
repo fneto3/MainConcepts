@@ -10,6 +10,8 @@ WORKDIR /src
 COPY ["Calculator.API/Calculator.API.csproj", "Calculator.API/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["../docker-compose.dcproj" "docker-compose.dcproj"]
+
 RUN dotnet restore "Calculator.API/Calculator.API.csproj"
 COPY . .
 WORKDIR "/src/Calculator.API"

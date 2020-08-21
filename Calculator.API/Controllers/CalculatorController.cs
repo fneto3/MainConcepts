@@ -20,7 +20,7 @@ namespace Calculator.API.Controllers
         private readonly ILogger<CalculatorController> _logger;
         private readonly TestConceptsContext _calculatorContext;
 
-        public CalculatorController(TestConceptsContext context, ILogger<CalculatorController> logger)
+        public CalculatorController(ILogger<CalculatorController> logger, TestConceptsContext context)
         {
             _logger = logger;
             _calculatorContext = context;
@@ -31,6 +31,8 @@ namespace Calculator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<ICalculator>> Addition(decimal a, decimal b)
         {
+            _logger.LogInformation("Testando", "Teste");
+
             var item = new Business.Calculator(a, b, CalculatorTypes.Addition);
 
             var type = _calculatorContext.CalculatorType.FirstOrDefault(item => item.Id == (int)CalculatorTypes.Addition);

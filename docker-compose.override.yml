@@ -21,12 +21,6 @@ services:
       - ConnectionString=${CalculatorConnection:-Server=sqldata;User ID=sa;Password=P@ssword;Database=Calculator;}
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-    ports:
-      - "5101:80"
-      - "9101:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
   publicapi:
     environment:
