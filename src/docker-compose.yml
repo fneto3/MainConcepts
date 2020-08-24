@@ -3,6 +3,8 @@ version: '3.5'
 services:
   seq:
     image: datalust/seq:latest
+    networks:
+      - mainConcepts
 
   sqldata:
     image: mcr.microsoft.com/mssql/server:2017-latest 
@@ -11,12 +13,21 @@ services:
     ports:
       - "5433:1433"
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    networks:
+      - mainConcepts
+    environment:
+      RABBITMQ_DEFAULT_USER: "rabbitUser"
+      RABBITMQ_DEFAULT_PASS: "rabbitPass"
+
   calculatorapi:
     image: ${DOCKER_REGISTRY-}calculatorapi
     build:
       context: .
       dockerfile: Services/Calculator.API/Dockerfile
     depends_on:
+      - rabbitmq
       - sqldata
     networks:
       - mainConcepts
@@ -28,6 +39,7 @@ services:
       dockerfile: Services/PublicApi/Dockerfile
     depends_on:
       - calculatorapi
+      - rabbitmq
     networks:
       - mainConcepts
 

@@ -4,16 +4,16 @@ using System.Reflection;
 
 namespace Infrastructure.Data
 {
-    public class MainConceptsContext : DbContext
+    public class CalculatorContext : DbContext
     {
-        public MainConceptsContext(DbContextOptions<MainConceptsContext> options) 
+        public CalculatorContext(DbContextOptions<CalculatorContext> options) 
             : base(options)
         {
             this.Database.EnsureCreated();
         }
 
-        public DbSet<Calculator> Calculator { get; set; }
-        public DbSet<CalculatorType> CalculatorType { get; set; }
+        public DbSet<Calculator> Calculators { get; set; }
+        public DbSet<CalculatorType> CalculatorTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

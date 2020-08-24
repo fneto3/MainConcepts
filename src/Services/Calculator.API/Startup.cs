@@ -1,20 +1,24 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using ApplicationCore.Entities.Interfaces;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Calculator.API.IntergrationEvents;
+using Calculator.API.IntergrationEvents.EventHandling;
+using Calculator.API.IntergrationEvents.Events;
+using EventBus;
+using EventBus.Abstractions;
+using EventBusRabbitMQ;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 
 namespace Calculator.API
 {
@@ -26,7 +30,7 @@ namespace Calculator.API
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
 
@@ -34,6 +38,8 @@ namespace Calculator.API
 
             services.AddSwaggerGen();
 
+            services.AddTransient<ICalculatorIntegrationEventService, CalculatorIntegrationEventService>();
+            
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -43,6 +49,52 @@ namespace Calculator.API
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
+
+            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+                var factory = new ConnectionFactory()
+                {
+                    HostName = Configuration["EventBusRabbit:EventBusConnection"],
+                    DispatchConsumersAsync = true,
+                    Port = 5672
+                };
+
+                if (!string.IsNullOrEmpty(Configuration["EventBusRabbit:EventBusUserName"]))
+                {
+                    factory.UserName = Configuration["EventBusRabbit:EventBusUserName"];
+                }
+
+                if (!string.IsNullOrEmpty(Configuration["EventBusRabbit:EventBusPassword"]))
+                {
+                    factory.Password = Configuration["EventBusRabbit:EventBusPassword"];
+                }
+
+                var retryCount = 5;
+
+                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+            });
+
+            services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ>(sp =>
+            {
+                var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ.EventBusRabbitMQ>>();
+                var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+                var retryCount = 5;
+
+                return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, "Calculator", retryCount);
+            });
+
+            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+            services.AddTransient<CalculatorInsertedValidationIntegrationEventHandler>();
+            services.AddOptions();
+
+            var container = new ContainerBuilder();
+            container.Populate(services);
+
+            return new AutofacServiceProvider(container.Build());
         }
 
         public IConfiguration Configuration { get; }
@@ -68,7 +120,7 @@ namespace Calculator.API
 
         public void ConfigureProductionServices(IServiceCollection services)
         {
-            services.AddDbContext<MainConceptsContext>(c =>
+            services.AddDbContext<CalculatorContext>(c =>
                 c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection")));
 
             ConfigureServices(services);
@@ -107,13 +159,8 @@ namespace Calculator.API
                 endpoints.MapControllers();
             });
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .Enrich.FromLogContext()
-                .WriteTo.Seq("http://locahost:5341")
-                .CreateLogger();
-
-            log.AddSerilog();
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<CalculatorInsertedEvent, CalculatorInsertedValidationIntegrationEventHandler>();
         }
     }
 
@@ -122,7 +169,7 @@ namespace Calculator.API
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<MainConceptsContext>(options =>
+                    .AddDbContext<CalculatorContext>(options =>
                     {
                         options.UseSqlServer(configuration["ConnectionString"],
                                              sqlServerOptionsAction: sqlOptions =>
@@ -131,6 +178,21 @@ namespace Calculator.API
                                                  sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                              });
                     });
+
+            return services;
+        }
+
+        public static IServiceCollection AddCustomMVC(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
 
             return services;
         }

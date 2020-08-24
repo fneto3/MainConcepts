@@ -10,7 +10,7 @@ namespace Infrastructure.Data
 {
     public class MainConceptsContextSeed
     {
-        public static async Task SeedAsync(MainConceptsContext calculatorContext, ILoggerFactory loggerFactory, int? retry = 0)
+        public static async Task SeedAsync(CalculatorContext calculatorContext, ILoggerFactory loggerFactory, int? retry = 0)
         {
             int retryForAvailability = retry.Value;
 
@@ -18,9 +18,9 @@ namespace Infrastructure.Data
             {
                 // TODO: Only run this if using a real database
                 calculatorContext.Database.Migrate();
-                if (!await calculatorContext.CalculatorType.AnyAsync())
+                if (!await calculatorContext.CalculatorTypes.AnyAsync())
                 {
-                    await calculatorContext.CalculatorType.AddRangeAsync(
+                    await calculatorContext.CalculatorTypes.AddRangeAsync(
                         GetPreconfiguredCalculatorType());
 
                     await calculatorContext.SaveChangesAsync();
