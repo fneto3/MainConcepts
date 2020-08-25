@@ -1,19 +1,15 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using ApplicationCore.Business;
-using ApplicationCore.Entities;
-using ApplicationCore.Entities.Interfaces;
+using Calculator.API.Infrastructure;
 using Calculator.API.IntergrationEvents;
 using Calculator.API.IntergrationEvents.Events;
+using Calculator.API.Model.Interface;
 using Calculator.API.ViewModel;
-using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
-using Business = ApplicationCore.Business;
-using Entities = ApplicationCore.Entities;
+using Model = Calculator.API.Model;
 
 namespace Calculator.API.Controllers
 {
@@ -37,23 +33,21 @@ namespace Calculator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<ICalculator>> Addition(decimal a, decimal b)
         {
-            var item = new Business.Calculator(a, b, CalculatorTypes.Addition);
-
-            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)CalculatorTypes.Addition);
-
-            var data = new Entities.Calculator
+            var item = new Model.Calculator
             {
-                A = item.A,
-                B = item.B,
-                Result = item.Result,
-                CalculatorType = type
+                A = a,
+                B = b
             };
 
-            _calculatorContext.Calculators.Add(data);
+            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Addition);
+
+            item.CalculatorType = type;
+
+            _calculatorContext.Calculators.Add(item);
             
             await _calculatorContext.SaveChangesAsync();
 
-            var newCalculatorItem = new CalculatorInsertedEvent(data.Id, data);
+            var newCalculatorItem = new CalculatorInsertedEvent(item.Id, item);
 
             // Achieving atomicity between original Catalog database operation and the IntegrationEventLog thanks to a local transaction
             await _calculatorIntegrationEventService.SaveEventAndCalculatorContextChangesAsync(newCalculatorItem);
@@ -61,7 +55,7 @@ namespace Calculator.API.Controllers
             // Publish through the Event Bus and mark the saved event as published
             await _calculatorIntegrationEventService.PublishThroughEventBusAsync(newCalculatorItem);
 
-            return Ok(data);
+            return Ok(item);
         }
 
         [Route("Subtraction")]
@@ -69,23 +63,21 @@ namespace Calculator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<ICalculator>> Subtraction(decimal a, decimal b)
         {
-            var item = new Business.Calculator(a, b, CalculatorTypes.Subtraction);
-
-            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)CalculatorTypes.Subtraction);
-
-            var data = new Entities.Calculator
+            var item = new Model.Calculator
             {
-                A = item.A,
-                B = item.B,
-                Result = item.Result,
-                CalculatorType = type
+                A = a,
+                B = b
             };
 
-            _calculatorContext.Calculators.Add(data);
+            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Subtraction);
+
+            item.CalculatorType = type;
+
+            _calculatorContext.Calculators.Add(item);
 
             await _calculatorContext.SaveChangesAsync();
 
-            return Ok(data);
+            return Ok(item);
         }
 
         [Route("Division")]
@@ -97,23 +89,21 @@ namespace Calculator.API.Controllers
             if (b == 0)
                 return BadRequest("Can not divide by zero.");
 
-            var item = new Business.Calculator(a, b, CalculatorTypes.Division);
-
-            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)CalculatorTypes.Division);
-
-            var data = new Entities.Calculator
+            var item = new Model.Calculator
             {
-                A = item.A,
-                B = item.B,
-                Result = item.Result,
-                CalculatorType = type
+                A = a,
+                B = b
             };
 
-            _calculatorContext.Calculators.Add(data);
+            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Division);
+
+            item.CalculatorType = type;
+
+            _calculatorContext.Calculators.Add(item);
 
             await _calculatorContext.SaveChangesAsync();
 
-            return Ok(data);
+            return Ok(item);
         }
 
         [Route("Multiplication")]
@@ -121,31 +111,29 @@ namespace Calculator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<ICalculator>> Multiplication(decimal a, decimal b)
         {
-            var item = new Business.Calculator(a, b, CalculatorTypes.Multiplication);
-
-            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)CalculatorTypes.Multiplication);
-
-            var data = new Entities.Calculator
+            var item = new Model.Calculator
             {
-                A = item.A,
-                B = item.B,
-                Result = item.Result,
-                CalculatorType = type
+                A = a,
+                B = b
             };
 
-            _calculatorContext.Calculators.Add(data);
+            var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Multiplication);
+
+            item.CalculatorType = type;
+
+            _calculatorContext.Calculators.Add(item);
 
             await _calculatorContext.SaveChangesAsync();
 
-            return Ok(data);
+            return Ok(item);
         }
 
         [Route("items/calculatorType/{calcultorTypeId:int}")]
         [HttpGet]
-        [ProducesResponseType(typeof(PaginatedItemsViewModel<Entities.Calculator>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<PaginatedItemsViewModel<Entities.Calculator>>> ItemsByCalculatorTypeIdAsync(int calculatorType, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
+        [ProducesResponseType(typeof(PaginatedItemsViewModel<Model.Calculator>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<PaginatedItemsViewModel<Model.Calculator>>> ItemsByCalculatorTypeIdAsync(int calculatorType, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
         {
-            var root = (IQueryable<Entities.Calculator>)_calculatorContext.Calculators;
+            var root = (IQueryable<Model.Calculator>)_calculatorContext.Calculators;
 
             root = root.Where(item => item.CalculatorType.Id == calculatorType);
 
@@ -156,7 +144,7 @@ namespace Calculator.API.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            return new PaginatedItemsViewModel<Entities.Calculator>(pageIndex, pageSize, totalItems, itemsOnPage);
+            return new PaginatedItemsViewModel<Model.Calculator>(pageIndex, pageSize, totalItems, itemsOnPage);
         }
     }
 }

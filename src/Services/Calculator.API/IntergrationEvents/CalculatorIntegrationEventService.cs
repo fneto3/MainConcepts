@@ -1,6 +1,6 @@
-﻿using EventBus.Abstractions;
+﻿using Calculator.API.Infrastructure;
+using EventBus.Abstractions;
 using EventBus.Events;
-using Infrastructure.Data;
 using IntegrationEventLogEF.Services;
 using IntegrationEventLogEF.Utilities;
 using Microsoft.EntityFrameworkCore;

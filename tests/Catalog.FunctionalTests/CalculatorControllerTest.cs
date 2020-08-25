@@ -1,5 +1,4 @@
-using ApplicationCore.Business;
-using Infrastructure.Data;
+using Calculator.API.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,12 +13,12 @@ namespace Catalog.FunctionalTests
         public CalculatorControllerTest()
         {
             _dbOptions = new DbContextOptionsBuilder<CalculatorContext>()
-                .UseInMemoryDatabase(databaseName: "in-memory")
+                //.UseInMemoryDatabase(databaseName: "in-memory")
                 .Options;
 
             using (var dbContext = new CalculatorContext(_dbOptions))
             {
-                dbContext.AddRange(GetFakeCalculators());
+                //dbContext.AddRange(GetFakeCalculators());
                 dbContext.SaveChanges();
             }
         }
@@ -52,23 +51,23 @@ namespace Catalog.FunctionalTests
             //Assert.Equal(expectedItemsInPage, page.Data.Count());
         }
 
-        private List<Calculator> GetFakeCalculators()
-        {
-            return new List<Calculator>()
-            {
-                new Calculator(1, 1, CalculatorTypes.Addition),
-                new Calculator(2, 2, CalculatorTypes.Addition),
-                new Calculator(33, 11, CalculatorTypes.Addition),
-                new Calculator(2, 2, CalculatorTypes.Subtraction),
-                new Calculator(12, 2, CalculatorTypes.Subtraction),
-                new Calculator(21, 21, CalculatorTypes.Subtraction),
-                new Calculator(10, 23, CalculatorTypes.Multiplication),
-                new Calculator(133, 22, CalculatorTypes.Multiplication),
-                new Calculator(1444, 22, CalculatorTypes.Multiplication),
-                new Calculator(1566, 727, CalculatorTypes.Division),
-                new Calculator(871, 268, CalculatorTypes.Division),
-                new Calculator(961, 288, CalculatorTypes.Division),
-            };
-        }
+        //private List<Calculator> GetFakeCalculators()
+        //{
+        //    return new List<Calculator>()
+        //    {
+        //        new Calculator(1, 1, CalculatorTypes.Addition),
+        //        new Calculator(2, 2, CalculatorTypes.Addition),
+        //        new Calculator(33, 11, CalculatorTypes.Addition),
+        //        new Calculator(2, 2, CalculatorTypes.Subtraction),
+        //        new Calculator(12, 2, CalculatorTypes.Subtraction),
+        //        new Calculator(21, 21, CalculatorTypes.Subtraction),
+        //        new Calculator(10, 23, CalculatorTypes.Multiplication),
+        //        new Calculator(133, 22, CalculatorTypes.Multiplication),
+        //        new Calculator(1444, 22, CalculatorTypes.Multiplication),
+        //        new Calculator(1566, 727, CalculatorTypes.Division),
+        //        new Calculator(871, 268, CalculatorTypes.Division),
+        //        new Calculator(961, 288, CalculatorTypes.Division),
+        //    };
+        //}
     }
 }

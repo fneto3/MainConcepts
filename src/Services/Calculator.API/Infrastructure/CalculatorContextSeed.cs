@@ -1,14 +1,13 @@
-﻿using ApplicationCore.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Model = Calculator.API.Model;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Data
+namespace Calculator.API.Infrastructure
 {
-    public class MainConceptsContextSeed
+    public class CalculatorContextSeed
     {
         public static async Task SeedAsync(CalculatorContext calculatorContext, ILoggerFactory loggerFactory, int? retry = 0)
         {
@@ -31,7 +30,7 @@ namespace Infrastructure.Data
                 if (retryForAvailability < 10)
                 {
                     retryForAvailability++;
-                    var log = loggerFactory.CreateLogger<MainConceptsContextSeed>();
+                    var log = loggerFactory.CreateLogger<CalculatorContextSeed>();
                     log.LogError(ex.Message);
                     await SeedAsync(calculatorContext, loggerFactory, retryForAvailability);
                 }
@@ -39,14 +38,14 @@ namespace Infrastructure.Data
             }
         }
 
-        static IEnumerable<CalculatorType> GetPreconfiguredCalculatorType()
+        static IEnumerable<Model.CalculatorType> GetPreconfiguredCalculatorType()
         {
-            return new List<CalculatorType>()
+            return new List<Model.CalculatorType>()
             {
-                new CalculatorType("Addition"),
-                new CalculatorType("Subtraction"),
-                new CalculatorType("Division"),
-                new CalculatorType("Multiplication")
+                new Model.CalculatorType("Addition"),
+                new Model.CalculatorType("Subtraction"),
+                new Model.CalculatorType("Division"),
+                new Model.CalculatorType("Multiplication")
             };
         }
     }

@@ -1,37 +1,28 @@
-﻿using ApplicationCore.Entities;
-using ApplicationCore.Entities.Interfaces;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace ApplicationCore.Business
+namespace Calculator.API.Model
 {
-    public class Calculator : ICalculator
+    public class Calculator
     {
-        private readonly ILogger<Calculator> _logger;
-
-        public Calculator(decimal a, decimal b, CalculatorTypes calculatorTypes)
+        public Calculator()
         {
-            A = a;
-            B = b;
-            CalculatorType = calculatorTypes;
 
-            Calculate();
         }
 
-        public decimal A { get; private set; }
+        public int Id { get; set; }
 
-        public decimal B { get; private set; }
+        public decimal A { get; set; }
 
-        public CalculatorTypes CalculatorType { get; private set; }
+        public decimal B { get; set; }
 
-        public decimal Result { get; private set; }
+        public decimal Result { get; set; }
+
+        public CalculatorType CalculatorType { get; set; }
 
         public void Calculate()
         {
-            switch (CalculatorType)
+            switch ((CalculatorTypes)CalculatorType.Id)
             {
                 case CalculatorTypes.Addition:
                     Result = A + B;

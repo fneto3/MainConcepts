@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
-using ApplicationCore.Entities;
-using ApplicationCore.Entities.Interfaces;
+using Calculator.API.Model.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 

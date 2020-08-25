@@ -1,6 +1,6 @@
-﻿using Calculator.API.IntergrationEvents.Events;
+﻿using Calculator.API.Infrastructure;
+using Calculator.API.IntergrationEvents.Events;
 using EventBus.Abstractions;
-using Infrastructure.Data;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using System;

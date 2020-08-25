@@ -1,15 +1,17 @@
 using System;
+using System.Data.Common;
 using System.Reflection;
-using ApplicationCore.Entities.Interfaces;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Calculator.API.Infrastructure;
 using Calculator.API.IntergrationEvents;
 using Calculator.API.IntergrationEvents.EventHandling;
 using Calculator.API.IntergrationEvents.Events;
 using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
-using Infrastructure.Data;
+using IntegrationEventLogEF;
+using IntegrationEventLogEF.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -32,8 +34,6 @@ namespace Calculator.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
-
             services.AddControllers();
 
             services.AddSwaggerGen();
@@ -49,6 +49,11 @@ namespace Calculator.API
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
+
+            services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
+                sp => (DbConnection c) => new IntegrationEventLogService(c));
+
+            services.AddTransient<ICalculatorIntegrationEventService, CalculatorIntegrationEventService>();
 
             services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
             {
@@ -112,9 +117,6 @@ namespace Calculator.API
 
         private void ConfigureInMemoryDatabases(IServiceCollection services)
         {
-            //services.AddDbContext<MainConceptsContext>(c =>
-            //    c.UseInMemoryDatabase("Catalog"));
-
             ConfigureServices(services);
         }
 
@@ -122,6 +124,9 @@ namespace Calculator.API
         {
             services.AddDbContext<CalculatorContext>(c =>
                 c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection")));
+
+            services.AddDbContext<IntegrationEventLogContext>(c =>
+                c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection"), b => b.MigrationsAssembly("Calculator.API")));
 
             ConfigureServices(services);
         }
@@ -178,6 +183,16 @@ namespace Calculator.API
                                                  sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                              });
                     });
+
+            services.AddDbContext<IntegrationEventLogContext>(options =>
+            {
+                options.UseSqlServer(configuration["ConnectionString"],
+                                     sqlServerOptionsAction: sqlOptions =>
+                                     {
+                                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                                     });
+            });
 
             return services;
         }

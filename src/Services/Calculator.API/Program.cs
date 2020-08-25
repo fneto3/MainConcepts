@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
-using Infrastructure.Data;
+using Calculator.API.Infrastructure;
+using IntegrationEventLogEF;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -38,7 +40,10 @@ namespace Calculator.API
                 try
                 {
                     var calculatorContext = services.GetRequiredService<CalculatorContext>();
-                    await MainConceptsContextSeed.SeedAsync(calculatorContext, loggerFactory);
+                    await CalculatorContextSeed.SeedAsync(calculatorContext, loggerFactory);
+
+                    var integrationContext = services.GetRequiredService<IntegrationEventLogContext>();
+                    integrationContext.Database.Migrate();
                 }
                 catch (Exception ex)
                 {

@@ -10,6 +10,7 @@ namespace IntegrationEventLogEF
     {
         public IntegrationEventLogContext(DbContextOptions<IntegrationEventLogContext> options) : base(options)
         {
+
         }
 
         public DbSet<IntegrationEventLogEntry> IntegrationEventLogs { get; set; }
