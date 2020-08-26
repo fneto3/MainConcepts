@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Calculator.API.Infrastructure;
 using Calculator.API.IntergrationEvents;
 using Calculator.API.IntergrationEvents.Events;
+using Calculator.API.Model;
 using Calculator.API.Model.Interface;
 using Calculator.API.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -43,16 +44,16 @@ namespace Calculator.API.Controllers
 
             item.CalculatorType = type;
 
+            item.Calculate();
+
             _calculatorContext.Calculators.Add(item);
-            
+
             await _calculatorContext.SaveChangesAsync();
 
-            var newCalculatorItem = new CalculatorInsertedEvent(item.Id, item);
+            var newCalculatorItem = new CalculatorInsertedEvent(item.Id, item.A, item.B, item.Result, item.CalculatorType?.Name);
 
-            // Achieving atomicity between original Catalog database operation and the IntegrationEventLog thanks to a local transaction
             await _calculatorIntegrationEventService.SaveEventAndCalculatorContextChangesAsync(newCalculatorItem);
 
-            // Publish through the Event Bus and mark the saved event as published
             await _calculatorIntegrationEventService.PublishThroughEventBusAsync(newCalculatorItem);
 
             return Ok(item);
@@ -72,6 +73,8 @@ namespace Calculator.API.Controllers
             var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Subtraction);
 
             item.CalculatorType = type;
+
+            item.Calculate();
 
             _calculatorContext.Calculators.Add(item);
 
@@ -99,6 +102,8 @@ namespace Calculator.API.Controllers
 
             item.CalculatorType = type;
 
+            item.Calculate();
+
             _calculatorContext.Calculators.Add(item);
 
             await _calculatorContext.SaveChangesAsync();
@@ -120,6 +125,8 @@ namespace Calculator.API.Controllers
             var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Multiplication);
 
             item.CalculatorType = type;
+
+            item.Calculate();
 
             _calculatorContext.Calculators.Add(item);
 

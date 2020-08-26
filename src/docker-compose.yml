@@ -13,6 +13,11 @@ services:
     ports:
       - "5433:1433"
 
+  redis: 
+    image: redis:alpine
+    networks:
+      - mainConcepts
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     networks:
@@ -40,6 +45,7 @@ services:
     depends_on:
       - calculatorapi
       - rabbitmq
+      - redis
     networks:
       - mainConcepts
 

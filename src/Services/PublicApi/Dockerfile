@@ -7,20 +7,22 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["Services/PublicApi/PublicApi.csproj", "Services/PublicApi/"]
+COPY ["Services/Calculator.API/Calculator.API.csproj", "Services/Calculator.API/"]
 COPY ["Core/ApplicationCore/ApplicationCore.csproj", "Core/ApplicationCore/"]
 COPY ["Core/Infrastructure/Infrastructure.csproj", "Core/Infrastructure/"]
+COPY ["EventBus/EventBus.csproj", "EventBus/"]
+COPY ["EventBusRabbitMQ/EventBusRabbitMQ.csproj", "EventBusRabbitMQ/"]
 COPY ["docker-compose.dcproj" "docker-compose.dcproj"]
 
-RUN dotnet restore "Services/PublicApi/PublicApi.csproj"
+RUN dotnet restore "Services/Calculator.API/Calculator.API.csproj"
 COPY . .
-WORKDIR "/src/Services/PublicApi"
-RUN dotnet build "PublicApi.csproj" -c Release -o /app/build
+WORKDIR "/src/Services/Calculator.API"
+RUN dotnet build "Calculator.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "PublicApi.csproj" -c Release -o /app/publish
+RUN dotnet publish "Calculator.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "PublicApi.dll"]
+ENTRYPOINT ["dotnet", "Calculator.API.dll"]

@@ -38,22 +38,22 @@ namespace Calculator.API.IntergrationEvents
         {
             try
             {
-                _logger.LogInformation("Publishing integration event: {IntegrationEventId_published} from {AppName} - ({@IntegrationEvent})", evt.Id, "Calculator", evt);
+                _logger.LogInformation("Publishing integration event: {IntegrationEventId_published} from {AppName} - ({@IntegrationEvent})", evt.Identifier, "Calculator", evt);
 
-                await _eventLogService.MarkEventAsInProgressAsync(evt.Id);
+                await _eventLogService.MarkEventAsInProgressAsync(evt.Identifier);
                 _eventBus.Publish(evt);
-                await _eventLogService.MarkEventAsPublishedAsync(evt.Id);
+                await _eventLogService.MarkEventAsPublishedAsync(evt.Identifier);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})", evt.Id, "Calculator", evt);
-                await _eventLogService.MarkEventAsFailedAsync(evt.Id);
+                _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName} - ({@IntegrationEvent})", evt.Identifier, "Calculator", evt);
+                await _eventLogService.MarkEventAsFailedAsync(evt.Identifier);
             }
         }
 
         public async Task SaveEventAndCalculatorContextChangesAsync(IntegrationEvent evt)
         {
-            _logger.LogInformation("Saving changes and integrationEvent: {IntegrationEventId}", evt.Id);
+            _logger.LogInformation("Saving changes and integrationEvent: {IntegrationEventId}", evt.Identifier);
 
             await ResilientTransaction.New(_calculatorContext).ExecuteAsync(async () =>
             {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using Calculator.API.Infrastructure;
 using IntegrationEventLogEF;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +26,7 @@ namespace Calculator.API
         {
             Log.Logger = new LoggerConfiguration()
                            .ReadFrom.Configuration(Configuration)
-                           .Enrich.WithProperty("App Name", "Serilog Web App Sample")
+                           .Enrich.WithProperty("Public API", "Serilog Web App Sample")
                            .CreateLogger();
 
             var host = BuildWebHost(args);

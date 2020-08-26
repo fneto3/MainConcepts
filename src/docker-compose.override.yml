@@ -18,6 +18,12 @@ services:
     volumes:
       - ./Docker/SQL:/var/opt/mssql/data
 
+  redis:
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./Docker/Redis:/data
+
   rabbitmq:
     ports:
       - "15672:15672"
@@ -30,6 +36,7 @@ services:
       - ConnectionString=${CalculatorConnection:-Server=sqldata;User ID=sa;Password=Pass@word;Database=Calculator;}
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
+      - EventBusConnection=${CalculatorEventBusConnection:-rabbitmq}
     ports:
       - "5101:80"
       - "9101:443"
@@ -40,11 +47,14 @@ services:
 
   publicapi:
     environment:
+      - ConnectionString=${RedisPublicApi:-redis}
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
+      - EventBusConnection=${PublicApiEventBusConnection:-rabbitmq}
     ports:
-      - "80"
-      - "443"
+      - "5102:80"
+      - "9102:443"
+      - "6379"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

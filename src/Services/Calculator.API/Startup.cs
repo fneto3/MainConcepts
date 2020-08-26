@@ -10,17 +10,21 @@ using Calculator.API.IntergrationEvents.Events;
 using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
+using HealthChecks.UI.Client;
 using IntegrationEventLogEF;
 using IntegrationEventLogEF.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using HealthChecks.SqlServer;
 
 namespace Calculator.API
 {
@@ -95,6 +99,7 @@ namespace Calculator.API
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
             services.AddTransient<CalculatorInsertedValidationIntegrationEventHandler>();
             services.AddOptions();
+            services.AddCustomHealthCheck(Configuration);
 
             var container = new ContainerBuilder();
             container.Populate(services);
@@ -106,7 +111,6 @@ namespace Calculator.API
 
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
-            // use real database
             ConfigureProductionServices(services);
         }
 
@@ -162,6 +166,15 @@ namespace Calculator.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
             });
 
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
@@ -193,6 +206,26 @@ namespace Calculator.API
                                          sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                      });
             });
+
+            return services;
+        }
+
+        public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            hcBuilder
+                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddSqlServer(
+                    configuration["ConnectionString"],
+                    name: "Calculator.Api-check",
+                    tags: new string[] { "Calculator" });
+
+                hcBuilder
+                    .AddRabbitMQ(
+                        $"amqp://{configuration["EventBusConnection"]}",
+                        name: "catalog-rabbitmqbus-check",
+                        tags: new string[] { "rabbitmqbus" });
 
             return services;
         }
