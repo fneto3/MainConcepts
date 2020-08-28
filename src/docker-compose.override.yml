@@ -31,6 +31,12 @@ services:
     volumes:
       - ./Docker/RabbitMQ:/var/lib/rabbitmq/mnesia
 
+  ocelotgateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5555:80"
+
   calculatorapi:
     environment:
       - ConnectionString=${CalculatorConnection:-Server=sqldata;User ID=sa;Password=Pass@word;Database=Calculator;}

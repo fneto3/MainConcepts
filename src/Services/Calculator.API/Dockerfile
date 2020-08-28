@@ -8,8 +8,6 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Services/Calculator.API/Calculator.API.csproj", "Services/Calculator.API/"]
-COPY ["Core/ApplicationCore/ApplicationCore.csproj", "Core/ApplicationCore/"]
-COPY ["Core/Infrastructure/Infrastructure.csproj", "Core/Infrastructure/"]
 COPY ["EventBus/EventBus.csproj", "EventBus/"]
 COPY ["EventBusRabbitMQ/EventBusRabbitMQ.csproj", "EventBusRabbitMQ/"]
 COPY ["docker-compose.dcproj" "docker-compose.dcproj"]

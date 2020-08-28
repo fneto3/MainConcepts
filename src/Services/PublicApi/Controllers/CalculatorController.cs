@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Calculator.API.Model.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PublicApi.Model.Interface;
 
 namespace PublicApi.Controllers
 {

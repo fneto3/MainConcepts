@@ -3,10 +3,13 @@ using Autofac.Extensions.DependencyInjection;
 using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -46,12 +49,6 @@ namespace PublicApi
 
             services.Configure<PublicApiSettings>(Configuration);
 
-            //By connecting here we are making sure that our service
-            //cannot start until redis is ready. This might slow down startup,
-            //but given that there is a delay on resolving the ip address
-            //and then creating the connection it seems reasonable to move
-            //that cost to startup instead of having the first request pay the
-            //penalty.
             services.AddSingleton<ConnectionMultiplexer>(sp =>
             {
                 var settings = sp.GetRequiredService<IOptions<PublicApiSettings>>().Value;
@@ -104,6 +101,7 @@ namespace PublicApi
             services.AddTransient<CalculatorAddedIntegrantionEventHandler>();
 
             services.AddOptions();
+            services.AddCustomHealthCheck(Configuration);
 
             var container = new ContainerBuilder();
             container.Populate(services);
@@ -150,7 +148,8 @@ namespace PublicApi
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tests V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Public Api V1");
+                c.RoutePrefix = string.Empty;
             });
 
             app.UseHttpsRedirection();
@@ -164,6 +163,15 @@ namespace PublicApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
             });
 
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
@@ -174,6 +182,21 @@ namespace PublicApi
 
     public static class CustomExtensionMethods
     {
+        public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            hcBuilder
+                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddRedis(configuration["ConnectionString"])
+                .AddRabbitMQ(
+                    $"amqp://{configuration["EventBusRabbit:EventBusUserName"]}:{configuration["EventBusRabbit:EventBusPassword"]}@{configuration["EventBusConnection"]}",
+                    name: "catalog-rabbitmqbus-check",
+                    tags: new string[] { "rabbitmqbus" });
+
+            return services;
+        }
+
         public static IServiceCollection AddCustomMVC(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddCors(options =>

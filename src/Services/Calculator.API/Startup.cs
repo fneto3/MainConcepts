@@ -1,6 +1,5 @@
 using System;
 using System.Data.Common;
-using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Calculator.API.Infrastructure;
@@ -22,14 +21,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using HealthChecks.SqlServer;
 
 namespace Calculator.API
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -42,8 +41,12 @@ namespace Calculator.API
 
             services.AddSwaggerGen();
 
-            services.AddTransient<ICalculatorIntegrationEventService, CalculatorIntegrationEventService>();
-            
+            services.AddTransient<ICalculatorIntegrationEventService
+                , CalculatorIntegrationEventService>();
+
+            services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
+                sp => (DbConnection c) => new IntegrationEventLogService(c));
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -53,11 +56,6 @@ namespace Calculator.API
                     .AllowAnyHeader()
                     .AllowCredentials());
             });
-
-            services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
-                sp => (DbConnection c) => new IntegrationEventLogService(c));
-
-            services.AddTransient<ICalculatorIntegrationEventService, CalculatorIntegrationEventService>();
 
             services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
             {
@@ -107,8 +105,6 @@ namespace Calculator.API
             return new AutofacServiceProvider(container.Build());
         }
 
-        public IConfiguration Configuration { get; }
-
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
             ConfigureProductionServices(services);
@@ -152,7 +148,8 @@ namespace Calculator.API
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tests V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Calculator V1");
+                c.DefaultModelExpandDepth(1);
             });
 
             app.UseHttpsRedirection();
@@ -171,6 +168,7 @@ namespace Calculator.API
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
+
                 endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
                 {
                     Predicate = r => r.Name.Contains("self")
@@ -184,32 +182,6 @@ namespace Calculator.API
 
     public static class CustomExtensionMethods
     {
-        public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddEntityFrameworkSqlServer()
-                    .AddDbContext<CalculatorContext>(options =>
-                    {
-                        options.UseSqlServer(configuration["ConnectionString"],
-                                             sqlServerOptionsAction: sqlOptions =>
-                                             {
-                                                 sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                                 sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                             });
-                    });
-
-            services.AddDbContext<IntegrationEventLogContext>(options =>
-            {
-                options.UseSqlServer(configuration["ConnectionString"],
-                                     sqlServerOptionsAction: sqlOptions =>
-                                     {
-                                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                     });
-            });
-
-            return services;
-        }
-
         public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
         {
             var hcBuilder = services.AddHealthChecks();
@@ -219,28 +191,11 @@ namespace Calculator.API
                 .AddSqlServer(
                     configuration["ConnectionString"],
                     name: "Calculator.Api-check",
-                    tags: new string[] { "Calculator" });
-
-                hcBuilder
-                    .AddRabbitMQ(
-                        $"amqp://{configuration["EventBusConnection"]}",
+                    tags: new string[] { "Calculator" })
+                .AddRabbitMQ(
+                        $"amqp://{configuration["EventBusRabbit:EventBusUserName"]}:{configuration["EventBusRabbit:EventBusPassword"]}@{configuration["EventBusConnection"]}",
                         name: "catalog-rabbitmqbus-check",
                         tags: new string[] { "rabbitmqbus" });
-
-            return services;
-        }
-
-        public static IServiceCollection AddCustomMVC(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder
-                    .SetIsOriginAllowed((host) => true)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
-            });
 
             return services;
         }

@@ -26,7 +26,7 @@ namespace Calculator.API
         {
             Log.Logger = new LoggerConfiguration()
                            .ReadFrom.Configuration(Configuration)
-                           .Enrich.WithProperty("Public API", "Serilog Web App Sample")
+                           .Enrich.WithProperty("Calculator API", "Serilog Web App Sample")
                            .CreateLogger();
 
             var host = BuildWebHost(args);
