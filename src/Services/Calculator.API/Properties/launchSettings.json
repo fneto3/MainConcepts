@@ -12,16 +12,14 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "/swagger",
+      "launchUrl": "swagger/index.html",
       "environmentVariables": {
-        "ConnectionString": "server=localhost,5433;Database=Calculator;User Id=sa;Password=Pass@word",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "EventBusConnection": "localhost",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Calculator.API": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "https://localhost:9101/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

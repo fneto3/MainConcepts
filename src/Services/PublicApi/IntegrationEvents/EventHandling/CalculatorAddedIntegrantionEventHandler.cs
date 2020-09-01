@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PublicApi.IntegrationEvents.Events;
 using PublicApi.Model;
+using PublicApi.Model.Interface;
 using Serilog.Context;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,11 @@ namespace PublicApi.IntegrationEvents.EventHandling
     public class CalculatorAddedIntegrantionEventHandler : IIntegrationEventHandler<CalculatorInsertedEvent>
     {
         private readonly ILogger<CalculatorAddedIntegrantionEventHandler> _logger;
-        private readonly IRepository<Model.Calculator> _repository;
+        private readonly IRepository<Calculator> _repository;
 
         public CalculatorAddedIntegrantionEventHandler(
             ILogger<CalculatorAddedIntegrantionEventHandler> logger
-            ,IRepository<Model.Calculator> repository
+            ,IRepository<Calculator> repository
             )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

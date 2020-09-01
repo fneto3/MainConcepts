@@ -1,11 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PublicApi.Model;
+using PublicApi.Model.Interface;
+using ServiceStack;
+using ServiceStack.Redis;
 using StackExchange.Redis;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace PublicApi.Infrasctructure.Repositories
 {
@@ -35,9 +40,9 @@ namespace PublicApi.Infrasctructure.Repositories
             return data?.Select(k => k.ToString());
         }
 
-        public async Task<T> GetAsync(string key)
+        public async Task<T> GetAsync(string hashKey, string key)
         {
-            var data = await _database.StringGetAsync(key);
+            var data = await _database.HashGetAsync(hashKey, key);
 
             if (data.IsNullOrEmpty)
             {
@@ -49,23 +54,24 @@ namespace PublicApi.Infrasctructure.Repositories
 
         public async Task<T> UpdateAsync(T item)
         {
-            var created = await _database.StringSetAsync(item.GetKey(), JsonConvert.SerializeObject(item));
+            await _database.HashSetAsync(item.GetHashKey(), item.GetKey(), JsonConvert.SerializeObject(item));
 
-            if (!created)
-            {
-                _logger.LogInformation("Problem occur persisting the item.");
-                return default(T);
-            }
+            _logger.LogInformation("Calculator item persisted succesfully.");
 
-            _logger.LogInformation("Basket item persisted succesfully.");
-
-            return await GetAsync(item.GetKey());
+            return await GetAsync(item.GetHashKey(), item.GetKey());
         }
 
         private IServer GetServer()
         {
             var endpoint = _redis.GetEndPoints();
             return _redis.GetServer(endpoint.First());
+        }
+
+        public async Task<IEnumerable<T>> GetAll(string hashKey)
+        {
+            var data = await _database.HashGetAllAsync(new RedisKey(hashKey));
+
+            return data.Select(item => JsonConvert.DeserializeObject<T>(item.Value));
         }
     }
 }

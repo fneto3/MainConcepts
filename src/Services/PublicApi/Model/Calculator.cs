@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using PublicApi.Model.Interface;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,22 @@ namespace PublicApi.Model
 
         public string Type { get; set; }
 
-        public RedisKey GetKey()
+        public RedisValue GetKey()
         {
-            return new RedisKey($"Calculator:{Type}:{Id}");
+            return $"C{Id}";
+        }
+
+        public RedisKey GetHashKey()
+        {
+            return new RedisKey(Type);
+        }
+
+        public enum CalculatorTypes
+        {
+            Addition = 1,
+            Subtraction = 2,
+            Division = 3,
+            Multiplication = 4
         }
     }
 }

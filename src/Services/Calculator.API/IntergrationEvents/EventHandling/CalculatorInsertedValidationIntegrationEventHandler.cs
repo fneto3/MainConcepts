@@ -18,11 +18,11 @@ namespace Calculator.API.IntergrationEvents.EventHandling
         private readonly ILogger<CalculatorInsertedValidationIntegrationEventHandler> _logger;
 
         public CalculatorInsertedValidationIntegrationEventHandler(
-                 CalculatorContext catalogContext,
+                 CalculatorContext calculatorContext,
                  ICalculatorIntegrationEventService catalogIntegrationEventService,
                  ILogger<CalculatorInsertedValidationIntegrationEventHandler> logger)
         {
-            _calculatorContext = catalogContext;
+            _calculatorContext = calculatorContext;
             _calculatorIntegrationEventService = catalogIntegrationEventService;
             _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
         }

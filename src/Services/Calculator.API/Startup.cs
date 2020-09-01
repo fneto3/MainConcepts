@@ -149,7 +149,6 @@ namespace Calculator.API
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Calculator V1");
-                c.DefaultModelExpandDepth(1);
             });
 
             app.UseHttpsRedirection();
@@ -194,7 +193,7 @@ namespace Calculator.API
                     tags: new string[] { "Calculator" })
                 .AddRabbitMQ(
                         $"amqp://{configuration["EventBusRabbit:EventBusUserName"]}:{configuration["EventBusRabbit:EventBusPassword"]}@{configuration["EventBusConnection"]}",
-                        name: "catalog-rabbitmqbus-check",
+                        name: "calculator-rabbitmqbus-check",
                         tags: new string[] { "rabbitmqbus" });
 
             return services;

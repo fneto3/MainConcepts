@@ -17,6 +17,7 @@ using PublicApi.Infrasctructure.Repositories;
 using PublicApi.IntegrationEvents.EventHandling;
 using PublicApi.IntegrationEvents.Events;
 using PublicApi.Model;
+using PublicApi.Model.Interface;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using System;
@@ -96,8 +97,13 @@ namespace PublicApi
                 return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, "PublicApi", retryCount);
             });
 
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
+
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-            services.AddTransient<IRepository<Model.Calculator>, RedisRepository<Model.Calculator>>();
+            services.AddTransient<IRepository<Calculator>, RedisRepository<Calculator>>();
             services.AddTransient<CalculatorAddedIntegrantionEventHandler>();
 
             services.AddOptions();
@@ -149,7 +155,6 @@ namespace PublicApi
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Public Api V1");
-                c.RoutePrefix = string.Empty;
             });
 
             app.UseHttpsRedirection();
@@ -191,7 +196,7 @@ namespace PublicApi
                 .AddRedis(configuration["ConnectionString"])
                 .AddRabbitMQ(
                     $"amqp://{configuration["EventBusRabbit:EventBusUserName"]}:{configuration["EventBusRabbit:EventBusPassword"]}@{configuration["EventBusConnection"]}",
-                    name: "catalog-rabbitmqbus-check",
+                    name: "calculator-rabbitmqbus-check",
                     tags: new string[] { "rabbitmqbus" });
 
             return services;

@@ -24,11 +24,11 @@ namespace Calculator.API.IntergrationEvents
         public CalculatorIntegrationEventService(
             ILogger<CalculatorIntegrationEventService> logger,
             IEventBus eventBus,
-            CalculatorContext catalogContext,
+            CalculatorContext calculatorContext,
             Func<DbConnection, IIntegrationEventLogService> integrationEventLogServiceFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _calculatorContext = catalogContext ?? throw new ArgumentNullException(nameof(catalogContext));
+            _calculatorContext = calculatorContext ?? throw new ArgumentNullException(nameof(calculatorContext));
             _integrationEventLogServiceFactory = integrationEventLogServiceFactory ?? throw new ArgumentNullException(nameof(integrationEventLogServiceFactory));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _eventLogService = _integrationEventLogServiceFactory(_calculatorContext.Database.GetDbConnection());
