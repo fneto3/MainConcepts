@@ -89,7 +89,7 @@ namespace PublicApi
             services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ>(sp =>
             {
                 var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+                var iLifetimeScope = sp.GetRequiredService<IServiceScopeFactory>();
                 var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ.EventBusRabbitMQ>>();
                 var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
                 var retryCount = 5;
@@ -196,7 +196,7 @@ namespace PublicApi
                 .AddRedis(configuration["ConnectionString"])
                 .AddRabbitMQ(
                     $"amqp://{configuration["EventBusRabbit:EventBusUserName"]}:{configuration["EventBusRabbit:EventBusPassword"]}@{configuration["EventBusConnection"]}",
-                    name: "calculator-rabbitmqbus-check",
+                    name: "public-rabbitmqbus-check",
                     tags: new string[] { "rabbitmqbus" });
 
             return services;

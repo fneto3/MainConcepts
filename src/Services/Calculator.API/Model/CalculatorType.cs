@@ -6,12 +6,12 @@ namespace Calculator.API.Model
 {
     public class CalculatorType
     {
-        public CalculatorType(string name)
+        public CalculatorType()
         {
-            Name = name;
+
         }
 
         public int Id { get; set; }
-        public string Name { get; private set; }
+        public string Name { get; set; }
     }
 }

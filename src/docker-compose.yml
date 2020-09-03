@@ -28,6 +28,8 @@ services:
 
   ocelotgateway:
     image: ${DOCKER_REGISTRY}ocelotgateway
+    networks:
+      - mainConcepts
     build:
       context: .
       dockerfile: Gateway/Ocelot.Api.Gateway/Dockerfile

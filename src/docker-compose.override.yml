@@ -28,14 +28,16 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-    volumes:
-      - ./Docker/RabbitMQ:/var/lib/rabbitmq/mnesia
 
   ocelotgateway:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "5555:80"
+      - "5001:80"
+      - "5002:80"
+      - "9001:80"
+      - "9002:80"
 
   calculatorapi:
     environment:

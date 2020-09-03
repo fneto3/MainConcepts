@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Calculator.API.Infrastructure;
 using IntegrationEventLogEF;
@@ -34,19 +35,18 @@ namespace Calculator.API
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-                
+                var logger = services.GetService<ILogger<CalculatorContextSeed>>();
+
                 try
                 {
                     var calculatorContext = services.GetRequiredService<CalculatorContext>();
-                    await CalculatorContextSeed.SeedAsync(calculatorContext, loggerFactory);
+                    await CalculatorContextSeed.SeedAsync(calculatorContext, logger);
 
                     var integrationContext = services.GetRequiredService<IntegrationEventLogContext>();
                     integrationContext.Database.Migrate();
                 }
                 catch (Exception ex)
                 {
-                    var logger = loggerFactory.CreateLogger<Program>();
                     logger.LogError(ex, "An error occurred seeding the DB.");
                 }
             }
@@ -56,13 +56,22 @@ namespace Calculator.API
 
         public static IHost BuildWebHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                .UseAutofacServiceProviderFactory()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseSerilog();
-                    webBuilder.UseKestrel();
+                    webBuilder.UseKestrel();    
                 })
                 .Build();
+    }
+
+    public static class IHostBuilderExtension
+    {
+        public static IHostBuilder UseAutofacServiceProviderFactory(this IHostBuilder hostbuilder)
+        {
+            hostbuilder.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+            return hostbuilder;
+        }
     }
 }

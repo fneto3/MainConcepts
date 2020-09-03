@@ -26,14 +26,11 @@ namespace Ocelot.Api.Gateway
             }
 
             app.UseRouting();
-
-            app.UseSwaggerForOcelotUI().UseOcelot().Wait();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOcelot();
-            services.AddSwaggerForOcelot(Configuration);
         }
     }
 }
