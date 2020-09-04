@@ -57,6 +57,12 @@ services:
     networks:
       - mainConcepts
 
+  webstatus:
+    image: ${REGISTRY:-web}/webstatus:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Web Apps/WebStatus/Dockerfile
+
 networks:
   mainConcepts:
     name: mainConcepts

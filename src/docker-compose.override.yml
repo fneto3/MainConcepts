@@ -45,6 +45,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - EventBusConnection=${CalculatorEventBusConnection:-rabbitmq}
+      - PATH_BASE=/calculator
     ports:
       - "5101:80"
       - "9101:443"
@@ -59,6 +60,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - EventBusConnection=${PublicApiEventBusConnection:-rabbitmq}
+      - PATH_BASE=/publicapi
     ports:
       - "5102:80"
       - "9102:443"
@@ -66,3 +68,15 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  webstatus:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - HealthChecksUI__HealthChecks__0__Name=Calculator Check
+      - HealthChecksUI__HealthChecks__0__Uri=http://calculator/hc
+      - HealthChecksUI__HealthChecks__1__Name=Public Api Check
+      - HealthChecksUI__HealthChecks__1__Uri=http://publicapi/hc
+    ports:
+      - "5103:80"
+      - "9103:443"

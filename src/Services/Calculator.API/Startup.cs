@@ -90,9 +90,13 @@ namespace Calculator.API
             });
 
             services.AddOptions();
+            
             services.AddCustomHealthCheck(Configuration);
 
             services.AddServiceBus();
+
+            services.AddHealthChecksUI()
+                    .AddInMemoryStorage();
 
             var container = new ContainerBuilder();
             container.Populate(services);
@@ -169,6 +173,8 @@ namespace Calculator.API
                 });
             });
 
+            app.UseHealthChecksUI(config => config.UIPath = "/hc-ui");
+
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
             eventBus.Subscribe<CalculatorInsertedEvent, CalculatorInsertedValidationIntegrationEventHandler>();
         }
@@ -180,7 +186,8 @@ namespace Calculator.API
         {
             var hcBuilder = services.AddHealthChecks();
 
-            hcBuilder
+            // Rota HC
+            hcBuilder 
                 .AddCheck("self", () => HealthCheckResult.Healthy())
                 .AddSqlServer(
                     configuration["ConnectionString"],
