@@ -9,6 +9,9 @@ using Calculator.API.IntergrationEvents.Events;
 using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
+using Hangfire;
+using Hangfire.SqlServer;
+using Hangfire.AspNetCore;
 using HealthChecks.UI.Client;
 using IntegrationEventLogEF;
 using IntegrationEventLogEF.Services;
@@ -20,39 +23,39 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
+using System.Collections.Generic;
+using Calculator.API.Extension;
+using Calculator.API.Job;
+using Calculator.API.Job.Interface;
 
 namespace Calculator.API
 {
     public class Startup
     {
+        /// <summary>
+        /// Application configuration.
+        /// </summary>
         public IConfiguration Configuration { get; }
+
+        public ILifetimeScope AutofacContainer { get; private set; }
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services">Service Collection of Application.</param>
+        /// <returns>Service collection.</returns>
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            // Core Features
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo() { Title = "Calculator API", Version = "v1" });
-            });
-
-            services.AddTransient<ICalculatorIntegrationEventService
-                , CalculatorIntegrationEventService>();
-
-            services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
-                sp => (DbConnection c) => new IntegrationEventLogService(c));
-
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -63,6 +66,52 @@ namespace Calculator.API
                     .AllowCredentials());
             });
 
+            ConfigureRabbitMQ(services);
+            ConfigureSwagger(services);
+            ConfigureIntegrationServices(services);
+            ConfigureHealthCheck(services);
+            ConfigureDBContexts(services);
+            ConfigureHangFire(services);
+
+            var container = new ContainerBuilder();
+            container.Populate(services);
+
+            services.AddControllers();
+            services.AddOptions();
+        }
+
+        public void ConfigureHangFire(IServiceCollection services)
+        {
+            services.AddHangfire(configuration => configuration
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseSqlServerStorage(Configuration.GetConnectionString("CalculatorConnection"), new SqlServerStorageOptions
+                    {
+                        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                        QueuePollInterval = TimeSpan.Zero,
+                        UseRecommendedIsolationLevel = true,
+                        DisableGlobalLocks = true
+                    }));
+
+            services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(Configuration.GetConnectionString("CalculatorConnection"));
+            });
+
+            JobStorage.Current = new SqlServerStorage(Configuration.GetConnectionString("CalculatorConnection"));
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
+        }
+
+        /// <summary>
+        /// Configure Rabbit MQ Service, seting Host, User and Password.
+        /// </summary>
+        /// <param name="services">Service Collection of Application.</param>
+        private void ConfigureRabbitMQ(IServiceCollection services)
+        {
             services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
             {
                 var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
@@ -88,121 +137,39 @@ namespace Calculator.API
 
                 return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
             });
-
-            services.AddOptions();
-            
-            services.AddCustomHealthCheck(Configuration);
-
-            services.AddServiceBus();
-
-            services.AddHealthChecksUI()
-                    .AddInMemoryStorage();
-
-            var container = new ContainerBuilder();
-            container.Populate(services);
-
-            return new AutofacServiceProvider(container.Build());
         }
 
-        public void ConfigureDevelopmentServices(IServiceCollection services)
+        /// <summary>
+        /// Configure swagger, setting the version and Title of Application.
+        /// </summary>
+        /// <param name="services">Service Collection of Application.</param>
+        private void ConfigureSwagger(IServiceCollection services)
         {
-            ConfigureProductionServices(services);
-        }
-
-        public void ConfigureDockerServices(IServiceCollection services)
-        {
-            ConfigureDevelopmentServices(services);
-        }
-
-        private void ConfigureInMemoryDatabases(IServiceCollection services)
-        {
-            ConfigureServices(services);
-        }
-
-        public void ConfigureProductionServices(IServiceCollection services)
-        {
-            services.AddDbContext<CalculatorContext>(c =>
-                c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection")));
-
-            services.AddDbContext<IntegrationEventLogContext>(c =>
-                c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection"), b => b.MigrationsAssembly("Calculator.API")));
-
-            ConfigureServices(services);
-        }
-
-        public void ConfigureTestingServices(IServiceCollection services)
-        {
-            ConfigureInMemoryDatabases(services);
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory log)
-        {
-            if (env.IsDevelopment())
+            services.AddSwaggerGen(c =>
             {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Calculator V1");
+                c.SwaggerDoc("v1", 
+                    new OpenApiInfo() 
+                    { 
+                        Title = "Calculator API", 
+                        Version = "v1" 
+                    });
             });
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseCors("CorsPolicy");
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
-                {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
-
-                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
-                {
-                    Predicate = r => r.Name.Contains("self")
-                });
-            });
-
-            app.UseHealthChecksUI(config => config.UIPath = "/hc-ui");
-
-            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            eventBus.Subscribe<CalculatorInsertedEvent, CalculatorInsertedValidationIntegrationEventHandler>();
-        }
-    }
-
-    public static class CustomExtensionMethods
-    {
-        public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
-        {
-            var hcBuilder = services.AddHealthChecks();
-
-            // Rota HC
-            hcBuilder 
-                .AddCheck("self", () => HealthCheckResult.Healthy())
-                .AddSqlServer(
-                    configuration["ConnectionString"],
-                    name: "Calculator.Api-check",
-                    tags: new string[] { "Calculator" })
-                .AddRabbitMQ(
-                        $"amqp://{configuration["EventBusRabbit:EventBusUserName"]}:{configuration["EventBusRabbit:EventBusPassword"]}@{configuration["EventBusConnection"]}",
-                        name: "calculator-rabbitmqbus-check",
-                        tags: new string[] { "rabbitmqbus" });
-
-            return services;
         }
 
-        public static IServiceCollection AddServiceBus(this IServiceCollection services)
+        /// <summary>
+        /// Configure the integration service for Calculator, setting the handlers.
+        /// </summary>
+        /// <param name="services">Service Collection of Application.</param>
+        private void ConfigureIntegrationServices(IServiceCollection services)
         {
+            // Configuring the Integration Service that call the event bus.
+            services.AddTransient<ICalculatorIntegrationEventService
+                , CalculatorIntegrationEventService>();
+
+            // Configuring the event log service.
+            services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
+                sp => (DbConnection c) => new IntegrationEventLogService(c));
+
             services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ>(sp =>
             {
                 var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
@@ -216,8 +183,101 @@ namespace Calculator.API
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
             services.AddTransient<CalculatorInsertedValidationIntegrationEventHandler>();
+            services.AddSingleton<IIntegrationEventService, IntegrationEventService>();
+        }
 
-            return services;
+        /// <summary>
+        /// Configure the health check page, checkng informations about this App, Rabbit and SQL Server
+        /// </summary>
+        /// <param name="services">Service Collection of Application.</param>
+        private void ConfigureHealthCheck(IServiceCollection services)
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            // Rota HC
+            hcBuilder
+                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddSqlServer(
+                    Configuration["ConnectionString"],
+                    name: "Calculator.Api-check",
+                    tags: new string[] { "Calculator" })
+                .AddRabbitMQ(
+                        $"amqp://{Configuration["EventBusRabbit:EventBusUserName"]}:{Configuration["EventBusRabbit:EventBusPassword"]}@{Configuration["EventBusConnection"]}",
+                        name: "calculator-rabbitmqbus-check",
+                        tags: new string[] { "rabbitmqbus" });
+
+            services.AddHealthChecksUI()
+                    .AddInMemoryStorage();
+        }
+
+        /// <summary>
+        /// Configure DBContexts to use on Calculator Context and Integration Event Log Context.
+        /// </summary>
+        /// <param name="services">Service Collection of Application.</param>
+        private void ConfigureDBContexts(IServiceCollection services)
+        {
+            services.AddDbContext<CalculatorContext>(c =>
+                c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection")));
+
+            services.AddDbContext<IntegrationEventLogContext>(c =>
+                c.UseSqlServer(Configuration.GetConnectionString("CalculatorConnection"), b => b.MigrationsAssembly("Calculator.API")));
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(
+                IApplicationBuilder app
+              , IWebHostEnvironment env
+              , ILoggerFactory log
+              , IBackgroundJobClient backgroundJobs)
+        {
+            //Autofac configuration
+            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+
+            // Hangfire
+            app.UseStaticFiles();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+            {
+                StatsPollingInterval = 60000,
+                Authorization = new[] { new HangFireAuthorizationFilter() }
+            });
+            app.UseHangfireServer();
+            backgroundJobs.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
+
+            // Core features.
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthorization();
+            app.UseCors("CorsPolicy");
+
+            // Configuring swagger.
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Calculator V1");
+            });
+
+            // Configuring Healthcheck, setting endpoints.
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
+
+                endpoints.MapHangfireDashboard();
+            });
+            app.UseHealthChecksUI(config => config.UIPath = "/hc-ui");
+
+            // Subscribing application to eventbus.
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<CalculatorInsertedEvent, CalculatorInsertedValidationIntegrationEventHandler>();
         }
     }
 }

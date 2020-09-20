@@ -4,5 +4,54 @@
         <name>Calculator.API</name>
     </assembly>
     <members>
+        <member name="M:Calculator.API.IntergrationEvents.CalculatorIntegrationEventService.SaveEventAndCalculatorContextChangesAsync(EventBus.Events.IntegrationEvent)">
+            <summary>
+            
+            </summary>
+            <param name="evt"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Calculator.API.Startup.Configuration">
+            <summary>
+            Application configuration.
+            </summary>
+        </member>
+        <member name="M:Calculator.API.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services">Service Collection of Application.</param>
+            <returns>Service collection.</returns>
+        </member>
+        <member name="M:Calculator.API.Startup.ConfigureRabbitMQ(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure Rabbit MQ Service, seting Host, User and Password.
+            </summary>
+            <param name="services">Service Collection of Application.</param>
+        </member>
+        <member name="M:Calculator.API.Startup.ConfigureSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure swagger, setting the version and Title of Application.
+            </summary>
+            <param name="services">Service Collection of Application.</param>
+        </member>
+        <member name="M:Calculator.API.Startup.ConfigureIntegrationServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure the integration service for Calculator, setting the handlers.
+            </summary>
+            <param name="services">Service Collection of Application.</param>
+        </member>
+        <member name="M:Calculator.API.Startup.ConfigureHealthCheck(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure the health check page, checkng informations about this App, Rabbit and SQL Server
+            </summary>
+            <param name="services">Service Collection of Application.</param>
+        </member>
+        <member name="M:Calculator.API.Startup.ConfigureDBContexts(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configure DBContexts to use on Calculator Context and Integration Event Log Context.
+            </summary>
+            <param name="services">Service Collection of Application.</param>
+        </member>
     </members>
 </doc>

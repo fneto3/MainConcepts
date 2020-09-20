@@ -47,6 +47,20 @@ namespace IntegrationEventLogEF.Services
             return new List<IntegrationEventLogEntry>();
         }
 
+        public async Task<IEnumerable<IntegrationEventLogEntry>> RetrieveEventLogsPendingToPublishAsync()
+        {
+            var result = await _integrationEventLogContext.IntegrationEventLogs
+                .Where(e => e.State == EventStateEnum.NotPublished || e.State == EventStateEnum.PublishedFailed).ToListAsync();
+
+            if (result != null && result.Any())
+            {
+                return result.OrderBy(o => o.CreationTime)
+                    .Select(e => e.DeserializeJsonContent(_eventTypes.Find(t => t.Name == e.EventTypeShortName)));
+            }
+
+            return new List<IntegrationEventLogEntry>();
+        }
+
         public Task SaveEventAsync(IntegrationEvent @event, IDbContextTransaction transaction)
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));

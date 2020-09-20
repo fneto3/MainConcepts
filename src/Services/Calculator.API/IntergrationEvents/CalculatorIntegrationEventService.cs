@@ -51,6 +51,11 @@ namespace Calculator.API.IntergrationEvents
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <returns></returns>
         public async Task SaveEventAndCalculatorContextChangesAsync(IntegrationEvent evt)
         {
             _logger.LogInformation("Saving changes and integrationEvent: {IntegrationEventId}", evt.Identifier);

@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculator.FunctionalTests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web apps", "web apps", "{33E798CA-6DD0-43A0-8EA7-260D2811FCE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStatus", "Web Apps\WebStatus\WebStatus.csproj", "{86BC5D53-9E60-4958-A8F3-4D029F807439}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebStatus", "Web Apps\WebStatus\WebStatus.csproj", "{86BC5D53-9E60-4958-A8F3-4D029F807439}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

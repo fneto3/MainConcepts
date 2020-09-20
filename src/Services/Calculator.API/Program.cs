@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Calculator.API.Infrastructure;
+using Calculator.API.Job.Interface;
 using IntegrationEventLogEF;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,9 @@ namespace Calculator.API
 
                     var integrationContext = services.GetRequiredService<IntegrationEventLogContext>();
                     integrationContext.Database.Migrate();
+
+                    var jobs = services.GetRequiredService<IIntegrationEventService>();
+                    await jobs.CheckIntegrationEventsJob();
                 }
                 catch (Exception ex)
                 {

@@ -40,10 +40,10 @@ namespace Calculator.API.Infrastructure
         {
             return new List<Model.CalculatorType>()
             {
-                new Model.CalculatorType { Id = 1, Name = "Addition" },
-                new Model.CalculatorType { Id = 2, Name = "Subtraction" },
-                new Model.CalculatorType { Id = 3, Name = "Division" },
-                new Model.CalculatorType { Id = 4, Name = "Multiplication" }
+                new Model.CalculatorType { Name = "Addition" },
+                new Model.CalculatorType { Name = "Subtraction" },
+                new Model.CalculatorType { Name = "Division" },
+                new Model.CalculatorType { Name = "Multiplication" }
             };
         }
     }

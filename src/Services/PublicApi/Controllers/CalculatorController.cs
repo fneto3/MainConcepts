@@ -37,7 +37,9 @@ namespace PublicApi.Controllers
         [Route("Get")]
         public async Task<ActionResult<ICalculator>> Get(int id)
         {
-            return Ok();
+            var data = await _redis.GetAll(string.Empty);
+
+            return Ok(data);
         }
     }
 }

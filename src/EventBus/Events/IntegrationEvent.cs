@@ -5,6 +5,9 @@ using System.Text;
 
 namespace EventBus.Events
 {
+    /// <summary>
+    /// Base class to generate events.
+    /// </summary>
     public class IntegrationEvent
     {
         public IntegrationEvent()

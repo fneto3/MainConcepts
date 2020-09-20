@@ -22,7 +22,10 @@ namespace Calculator.API.Controllers
         private readonly CalculatorContext _calculatorContext;
         private readonly ICalculatorIntegrationEventService _calculatorIntegrationEventService;
 
-        public CalculatorController(ILogger<CalculatorController> logger, CalculatorContext context, ICalculatorIntegrationEventService calculatorIntegrationEventService)
+        public CalculatorController(
+              ILogger<CalculatorController> logger
+            , CalculatorContext context
+            , ICalculatorIntegrationEventService calculatorIntegrationEventService)
         {
             _logger = logger;
             _calculatorContext = context;
@@ -34,24 +37,26 @@ namespace Calculator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<ICalculator>> Addition(decimal a, decimal b)
         {
+            //Creating the model.
             var item = new Model.Calculator
             {
                 A = a,
                 B = b
             };
 
+            // Get the type of calculator.
             var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Addition);
 
             item.CalculatorType = type;
 
+            // Calculate
             item.Calculate();
 
             _calculatorContext.Calculators.Add(item);
 
-            await _calculatorContext.SaveChangesAsync();
-
+            // Creating new event to publish at event bus.
             var newCalculatorItem = new CalculatorInsertedEvent(item.Id, item.A, item.B, item.Result, item.CalculatorType?.Name);
-
+            
             await _calculatorIntegrationEventService.SaveEventAndCalculatorContextChangesAsync(newCalculatorItem);
 
             await _calculatorIntegrationEventService.PublishThroughEventBusAsync(newCalculatorItem);
@@ -64,12 +69,14 @@ namespace Calculator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<ICalculator>> Subtraction(decimal a, decimal b)
         {
+            //Creating the model.
             var item = new Model.Calculator
             {
                 A = a,
                 B = b
             };
 
+            // Get the type of calculator.
             var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Subtraction);
 
             item.CalculatorType = type;
@@ -78,7 +85,12 @@ namespace Calculator.API.Controllers
 
             _calculatorContext.Calculators.Add(item);
 
-            await _calculatorContext.SaveChangesAsync();
+            // Creating new event to publish at event bus.
+            var newCalculatorItem = new CalculatorInsertedEvent(item.Id, item.A, item.B, item.Result, item.CalculatorType?.Name);
+
+            await _calculatorIntegrationEventService.SaveEventAndCalculatorContextChangesAsync(newCalculatorItem);
+
+            await _calculatorIntegrationEventService.PublishThroughEventBusAsync(newCalculatorItem);
 
             return Ok(item);
         }
@@ -92,12 +104,14 @@ namespace Calculator.API.Controllers
             if (b == 0)
                 return BadRequest("Can not divide by zero.");
 
+            //Creating the model.
             var item = new Model.Calculator
             {
                 A = a,
                 B = b
             };
 
+            // Get the type of calculator.
             var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Division);
 
             item.CalculatorType = type;
@@ -106,7 +120,12 @@ namespace Calculator.API.Controllers
 
             _calculatorContext.Calculators.Add(item);
 
-            await _calculatorContext.SaveChangesAsync();
+            // Creating new event to publish at event bus.
+            var newCalculatorItem = new CalculatorInsertedEvent(item.Id, item.A, item.B, item.Result, item.CalculatorType?.Name);
+
+            await _calculatorIntegrationEventService.SaveEventAndCalculatorContextChangesAsync(newCalculatorItem);
+
+            await _calculatorIntegrationEventService.PublishThroughEventBusAsync(newCalculatorItem);
 
             return Ok(item);
         }
@@ -116,12 +135,14 @@ namespace Calculator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         public async Task<ActionResult<ICalculator>> Multiplication(decimal a, decimal b)
         {
+            //Creating the model.
             var item = new Model.Calculator
             {
                 A = a,
                 B = b
             };
 
+            // Get the type of calculator.
             var type = _calculatorContext.CalculatorTypes.FirstOrDefault(item => item.Id == (int)Model.CalculatorTypes.Multiplication);
 
             item.CalculatorType = type;
@@ -130,7 +151,12 @@ namespace Calculator.API.Controllers
 
             _calculatorContext.Calculators.Add(item);
 
-            await _calculatorContext.SaveChangesAsync();
+            // Creating new event to publish at event bus.
+            var newCalculatorItem = new CalculatorInsertedEvent(item.Id, item.A, item.B, item.Result, item.CalculatorType?.Name);
+
+            await _calculatorIntegrationEventService.SaveEventAndCalculatorContextChangesAsync(newCalculatorItem);
+
+            await _calculatorIntegrationEventService.PublishThroughEventBusAsync(newCalculatorItem);
 
             return Ok(item);
         }
